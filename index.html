@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YT Downloader Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #FF0000 0%, #990000 100%);
+        }
+        .video-card {
+            transition: all 0.3s ease;
+        }
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .download-btn {
+            transition: all 0.2s ease;
+        }
+        .download-btn:hover {
+            transform: scale(1.05);
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        .format-btn {
+            transition: all 0.2s ease;
+        }
+        .format-btn:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="gradient-bg text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <i class="fab fa-youtube text-4xl mr-3"></i>
+                    <h1 class="text-3xl font-bold">YT Downloader Pro</h1>
+                </div>
+                <div class="relative w-full md:w-1/2">
+                    <input type="text" id="videoUrl" placeholder="Paste YouTube URL here..." 
+                           class="w-full py-3 px-4 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <button id="searchBtn" class="absolute right-0 top-0 h-full px-6 bg-red-700 hover:bg-red-800 text-white rounded-r-full font-semibold transition">
+                        <i class="fas fa-search mr-2"></i> Search
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Loading State -->
+        <div id="loading" class="hidden flex flex-col items-center justify-center py-12">
+            <div class="w-16 h-16 border-4 border-red-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p class="text-gray-700 font-medium">Fetching video information...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
+            <p id="errorMessage"></p>
+        </div>
+
+        <!-- Video Info -->
+        <div id="videoInfo" class="hidden bg-white rounded-xl shadow-md overflow-hidden mb-8 video-card">
+            <div class="md:flex">
+                <div class="md:w-1/2">
+                    <img id="thumbnail" src="" alt="Video thumbnail" class="w-full h-full object-cover">
+                </div>
+                <div class="p-6 md:w-1/2">
+                    <h2 id="videoTitle" class="text-2xl font-bold text-gray-800 mb-2"></h2>
+                    <div class="flex items-center text-gray-600 mb-4">
+                        <span id="views" class="mr-4"></span>
+                        <span id="duration"></span>
+                    </div>
+                    <p id="description" class="text-gray-700 mb-6"></p>
+                    <div class="flex items-center">
+                        <img id="channelIcon" src="" alt="Channel icon" class="w-10 h-10 rounded-full mr-3">
+                        <div>
+                            <p id="channelName" class="font-medium text-gray-800"></p>
+                            <p id="subscribers" class="text-sm text-gray-600"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Download Options -->
+        <div id="downloadOptions" class="hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-download mr-3 text-red-500"></i> Download Options
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Video Quality Options -->
+                <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-film text-2xl text-red-500 mr-3"></i>
+                        <h3 class="text-xl font-semibold text-gray-800">Video</h3>
+                    </div>
+                    <div id="videoQualities" class="space-y-3">
+                        <!-- Options will be added here by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Audio Only Options -->
+                <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-music text-2xl text-red-500 mr-3"></i>
+                        <h3 class="text-xl font-semibold text-gray-800">Audio Only</h3>
+                    </div>
+                    <div id="audioQualities" class="space-y-3">
+                        <!-- Options will be added here by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Other Options -->
+                <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-cog text-2xl text-red-500 mr-3"></i>
+                        <h3 class="text-xl font-semibold text-gray-800">Other Formats</h3>
+                    </div>
+                    <div id="otherFormats" class="space-y-3">
+                        <!-- Options will be added here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works Section -->
+        <div class="mt-16 bg-white rounded-xl shadow-md p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-question-circle text-red-500 mr-3"></i> How It Works
+            </h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center p-4">
+                    <div class="bg-red-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-link text-red-500 text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">1. Paste URL</h3>
+                    <p class="text-gray-600">Copy and paste the YouTube video URL into the search box above.</p>
+                </div>
+                <div class="text-center p-4">
+                    <div class="bg-red-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-search text-red-500 text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">2. Get Info</h3>
+                    <p class="text-gray-600">Our system will fetch all available video information and formats.</p>
+                </div>
+                <div class="text-center p-4">
+                    <div class="bg-red-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-download text-red-500 text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">3. Download</h3>
+                    <p class="text-gray-600">Choose your preferred format and quality, then click download.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h2 class="text-xl font-bold flex items-center">
+                        <i class="fab fa-youtube mr-2"></i> YT Downloader Pro
+                    </h2>
+                    <p class="text-gray-400 mt-1">Fast, secure, and easy YouTube downloads</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-discord text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-6 pt-6 text-center md:text-left">
+                <p class="text-gray-400">© 2023 YT Downloader Pro. All rights reserved.</p>
+                <p class="text-gray-500 text-sm mt-1">Disclaimer: This is a demo application. Please respect YouTube's terms of service.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchBtn = document.getElementById('searchBtn');
+            const videoUrl = document.getElementById('videoUrl');
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const errorMessage = document.getElementById('errorMessage');
+            const videoInfo = document.getElementById('videoInfo');
+            const downloadOptions = document.getElementById('downloadOptions');
+            
+            // Mock data for demonstration
+            const mockVideoData = {
+                title: "How to Build a YouTube Downloader with JavaScript",
+                views: "1,234,567 views",
+                duration: "12:34",
+                description: "In this tutorial, we'll build a YouTube video downloader using HTML, CSS, and JavaScript. Learn how to fetch video information and provide download options.",
+                thumbnail: "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+                channelIcon: "https://yt3.googleusercontent.com/ytc/APkrFKaqca-zZQnS7WV1jWXMBiY1z1Y4b5X-p3XQ8X6R=s176-c-k-c0x00ffffff-no-rj",
+                channelName: "Code Masters",
+                subscribers: "1.2M subscribers",
+                formats: [
+                    { type: "video", quality: "1080p", size: "45.2 MB", format: "MP4" },
+                    { type: "video", quality: "720p", size: "32.7 MB", format: "MP4" },
+                    { type: "video", quality: "480p", size: "18.5 MB", format: "MP4" },
+                    { type: "video", quality: "360p", size: "12.3 MB", format: "MP4" },
+                    { type: "audio", quality: "High", size: "8.7 MB", format: "MP3" },
+                    { type: "audio", quality: "Medium", size: "5.2 MB", format: "MP3" },
+                    { type: "other", quality: "Subtitles", size: "0.1 MB", format: "SRT" },
+                    { type: "other", quality: "Thumbnail", size: "0.5 MB", format: "JPG" }
+                ]
+            };
+
+            // Function to validate YouTube URL
+            function isValidYouTubeUrl(url) {
+                const pattern = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+                return pattern.test(url);
+            }
+
+            // Function to display video info
+            function displayVideoInfo(data) {
+                document.getElementById('videoTitle').textContent = data.title;
+                document.getElementById('views').textContent = data.views;
+                document.getElementById('duration').textContent = data.duration;
+                document.getElementById('description').textContent = data.description;
+                document.getElementById('thumbnail').src = data.thumbnail;
+                document.getElementById('channelIcon').src = data.channelIcon;
+                document.getElementById('channelName').textContent = data.channelName;
+                document.getElementById('subscribers').textContent = data.subscribers;
+                
+                videoInfo.classList.remove('hidden');
+            }
+
+            // Function to create download buttons
+            function createDownloadButtons(data) {
+                const videoQualities = document.getElementById('videoQualities');
+                const audioQualities = document.getElementById('audioQualities');
+                const otherFormats = document.getElementById('otherFormats');
+                
+                // Clear previous options
+                videoQualities.innerHTML = '';
+                audioQualities.innerHTML = '';
+                otherFormats.innerHTML = '';
+                
+                data.formats.forEach(format => {
+                    const button = document.createElement('button');
+                    button.className = 'format-btn w-full flex justify-between items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition';
+                    
+                    const leftContent = document.createElement('div');
+                    leftContent.className = 'flex items-center';
+                    
+                    const icon = document.createElement('i');
+                    icon.className = format.type === 'video' ? 'fas fa-film text-red-500 mr-3' : 
+                                      format.type === 'audio' ? 'fas fa-music text-red-500 mr-3' : 
+                                      'fas fa-file text-red-500 mr-3';
+                    
+                    const textDiv = document.createElement('div');
+                    textDiv.className = 'text-left';
+                    
+                    const quality = document.createElement('p');
+                    quality.className = 'font-medium text-gray-800';
+                    quality.textContent = format.quality;
+                    
+                    const formatText = document.createElement('p');
+                    formatText.className = 'text-sm text-gray-500';
+                    formatText.textContent = format.format;
+                    
+                    textDiv.appendChild(quality);
+                    textDiv.appendChild(formatText);
+                    leftContent.appendChild(icon);
+                    leftContent.appendChild(textDiv);
+                    
+                    const rightContent = document.createElement('div');
+                    rightContent.className = 'text-sm text-gray-500';
+                    rightContent.textContent = format.size;
+                    
+                    button.appendChild(leftContent);
+                    button.appendChild(rightContent);
+                    
+                    // Add click event
+                    button.addEventListener('click', function() {
+                        alert(`Preparing to download ${format.quality} ${format.type} (${format.size})...`);
+                    });
+                    
+                    // Append to appropriate container
+                    if (format.type === 'video') {
+                        videoQualities.appendChild(button);
+                    } else if (format.type === 'audio') {
+                        audioQualities.appendChild(button);
+                    } else {
+                        otherFormats.appendChild(button);
+                    }
+                });
+                
+                downloadOptions.classList.remove('hidden');
+            }
+
+            // Search button click event
+            searchBtn.addEventListener('click', function() {
+                const url = videoUrl.value.trim();
+                
+                if (!url) {
+                    errorMessage.textContent = "Please enter a YouTube URL";
+                    error.classList.remove('hidden');
+                    return;
+                }
+                
+                if (!isValidYouTubeUrl(url)) {
+                    errorMessage.textContent = "Please enter a valid YouTube URL";
+                    error.classList.remove('hidden');
+                    return;
+                }
+                
+                // Hide error if previously shown
+                error.classList.add('hidden');
+                
+                // Show loading
+                loading.classList.remove('hidden');
+                videoInfo.classList.add('hidden');
+                downloadOptions.classList.add('hidden');
+                
+                // Simulate API call with setTimeout
+                setTimeout(function() {
+                    loading.classList.add('hidden');
+                    
+                    // For demo purposes, we'll use mock data
+                    displayVideoInfo(mockVideoData);
+                    createDownloadButtons(mockVideoData);
+                    
+                    // Scroll to video info
+                    videoInfo.scrollIntoView({ behavior: 'smooth' });
+                }, 1500);
+            });
+
+            // Also trigger search when pressing Enter in the input field
+            videoUrl.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchBtn.click();
+                }
+            });
+        });
+    </script>
+<p style="border-radius: 8px; text-align: center; font-size: 12px; color: #fff; margin-top: 16px;position: fixed; left: 8px; bottom: 8px; z-index: 10; background: rgba(0, 0, 0, 0.8); padding: 4px 8px;">Made with <img src="https://enzostvs-deepsite.hf.space/logo.svg" alt="DeepSite Logo" style="width: 16px; height: 16px; vertical-align: middle;display:inline-block;margin-right:3px;filter:brightness(0) invert(1);"><a href="https://enzostvs-deepsite.hf.space" style="color: #fff;text-decoration: underline;" target="_blank" >DeepSite</a> - 🧬 <a href="https://enzostvs-deepsite.hf.space?remix=rezabci/myspace" style="color: #fff;text-decoration: underline;" target="_blank" >Remix</a></p></body>
+</html>
