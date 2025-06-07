@@ -1,0 +1,351 @@
+Put your HTML text here<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YT Downloader Pro | Fast & Simple</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #FF0000 0%, #FF4500 100%);
+        }
+        .video-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        .download-btn {
+            transition: all 0.3s ease;
+        }
+        .download-btn:hover {
+            transform: scale(1.05);
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(255, 69, 0, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(255, 69, 0, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(255, 69, 0, 0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fab fa-youtube text-3xl"></i>
+                    <h1 class="text-2xl font-bold">YT Downloader Pro</h1>
+                </div>
+                <nav>
+                    <ul class="flex space-x-6">
+                        <li><a href="#" class="hover:underline">Home</a></li>
+                        <li><a href="#" class="hover:underline">How It Works</a></li>
+                        <li><a href="#" class="hover:underline">FAQ</a></li>
+                        <li><a href="#" class="hover:underline">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12">
+        <!-- Hero Section -->
+        <section class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Download YouTube Videos in Seconds</h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">Fast, free and unlimited downloads. No registration required.</p>
+            
+            <!-- Search Box -->
+            <div class="max-w-3xl mx-auto mt-10 relative">
+                <div class="relative">
+                    <input type="text" id="videoUrl" placeholder="Paste YouTube video URL here..." 
+                           class="w-full px-6 py-4 rounded-full border-2 border-gray-300 focus:border-red-500 focus:outline-none shadow-lg text-lg">
+                    <button id="fetchBtn" class="absolute right-2 top-1/2 transform -translate-y-1/2 gradient-bg text-white px-6 py-3 rounded-full hover:bg-red-600 transition duration-300 flex items-center">
+                        <i class="fas fa-search mr-2"></i> Fetch Video
+                    </button>
+                </div>
+                <div class="mt-4 text-sm text-gray-500">
+                    <p>Example: https://www.youtube.com/watch?v=dQw4w9WgXcQ</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Video Info Section (Initially hidden) -->
+        <section id="videoInfoSection" class="hidden mb-12">
+            <div class="bg-white rounded-xl shadow-xl overflow-hidden video-card">
+                <div class="md:flex">
+                    <div class="md:w-1/3">
+                        <img id="videoThumbnail" src="" alt="Video thumbnail" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-8 md:w-2/3">
+                        <h3 id="videoTitle" class="text-2xl font-bold text-gray-800 mb-4"></h3>
+                        <div class="flex items-center mb-4">
+                            <span id="videoDuration" class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm mr-4"></span>
+                            <span id="videoViews" class="text-gray-600"></span>
+                        </div>
+                        <p id="videoDescription" class="text-gray-600 mb-6 line-clamp-3"></p>
+                        
+                        <div class="flex flex-wrap gap-4">
+                            <button class="download-btn bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg flex items-center pulse" data-quality="high">
+                                <i class="fas fa-download mr-2"></i> HD (720p)
+                            </button>
+                            <button class="download-btn bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg flex items-center" data-quality="medium">
+                                <i class="fas fa-download mr-2"></i> SD (480p)
+                            </button>
+                            <button class="download-btn bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg flex items-center" data-quality="low">
+                                <i class="fas fa-download mr-2"></i> Low (360p)
+                            </button>
+                            <button class="download-btn bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center" data-quality="audio">
+                                <i class="fas fa-music mr-2"></i> Audio Only
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Why Choose Our Downloader</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                    <div class="text-red-500 text-4xl mb-4">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Super Fast</h3>
+                    <p class="text-gray-600">Our servers deliver your downloads at lightning speed with no speed limits.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                    <div class="text-red-500 text-4xl mb-4">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">100% Safe</h3>
+                    <p class="text-gray-600">No malware, no viruses, just clean downloads you can trust.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md text-center">
+                    <div class="text-red-500 text-4xl mb-4">
+                        <i class="fas fa-infinity"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Unlimited</h3>
+                    <p class="text-gray-600">Download as many videos as you want with no restrictions.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section class="bg-white rounded-xl shadow-xl p-8 mb-12">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">How To Download</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="flex flex-col items-center text-center">
+                    <div class="bg-red-100 text-red-500 rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold mb-4">1</div>
+                    <h3 class="text-xl font-semibold mb-2">Paste URL</h3>
+                    <p class="text-gray-600">Copy and paste the YouTube video URL into the box above</p>
+                </div>
+                <div class="flex flex-col items-center text-center">
+                    <div class="bg-red-100 text-red-500 rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold mb-4">2</div>
+                    <h3 class="text-xl font-semibold mb-2">Select Quality</h3>
+                    <p class="text-gray-600">Choose your preferred video or audio quality</p>
+                </div>
+                <div class="flex flex-col items-center text-center">
+                    <div class="bg-red-100 text-red-500 rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold mb-4">3</div>
+                    <h3 class="text-xl font-semibold mb-2">Download</h3>
+                    <p class="text-gray-600">Click download and save the file to your device</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">YT Downloader Pro</h3>
+                    <p class="text-gray-400">The fastest and most reliable YouTube video downloader online.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">About</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Legal</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Terms of Service</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">DMCA</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 YT Downloader Pro. All rights reserved.</p>
+                <p class="mt-2 text-sm">This service is not affiliated with YouTube. YouTube is a trademark of Google LLC.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Download Modal -->
+    <div id="downloadModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Download Starting</h3>
+                <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mb-6">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-spinner fa-spin text-red-500 mr-2"></i>
+                    <span id="downloadStatus">Preparing your download...</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div id="downloadProgress" class="bg-red-500 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="text-sm text-gray-500">
+                <p>Your download will start automatically. If it doesn't, <a href="#" class="text-red-500 hover:underline">click here</a>.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fetchBtn = document.getElementById('fetchBtn');
+            const videoUrlInput = document.getElementById('videoUrl');
+            const videoInfoSection = document.getElementById('videoInfoSection');
+            const downloadModal = document.getElementById('downloadModal');
+            const closeModal = document.getElementById('closeModal');
+            const downloadProgress = document.getElementById('downloadProgress');
+            const downloadStatus = document.getElementById('downloadStatus');
+            
+            // Mock video data (in a real app, this would come from an API)
+            const mockVideoData = {
+                title: "How to Build a YouTube Downloader - Full Tutorial",
+                thumbnail: "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+                duration: "12:34",
+                views: "1,234,567 views",
+                description: "In this tutorial, we'll walk through how to build your own YouTube video downloader from scratch. Learn the techniques used by professionals to create powerful web applications."
+            };
+            
+            // Fetch video info
+            fetchBtn.addEventListener('click', function() {
+                const url = videoUrlInput.value.trim();
+                
+                if (!url) {
+                    alert('Please enter a YouTube video URL');
+                    return;
+                }
+                
+                // In a real app, you would validate the URL and make an API call here
+                // For this demo, we'll use mock data
+                
+                // Show loading state
+                fetchBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Fetching...';
+                fetchBtn.disabled = true;
+                
+                // Simulate API call delay
+                setTimeout(function() {
+                    // Populate video info
+                    document.getElementById('videoTitle').textContent = mockVideoData.title;
+                    document.getElementById('videoThumbnail').src = mockVideoData.thumbnail;
+                    document.getElementById('videoDuration').textContent = mockVideoData.duration;
+                    document.getElementById('videoViews').textContent = mockVideoData.views;
+                    document.getElementById('videoDescription').textContent = mockVideoData.description;
+                    
+                    // Show video info section
+                    videoInfoSection.classList.remove('hidden');
+                    
+                    // Reset button
+                    fetchBtn.innerHTML = '<i class="fas fa-search mr-2"></i> Fetch Video';
+                    fetchBtn.disabled = false;
+                    
+                    // Scroll to video info
+                    videoInfoSection.scrollIntoView({ behavior: 'smooth' });
+                }, 1500);
+            });
+            
+            // Download buttons
+            document.querySelectorAll('.download-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const quality = this.getAttribute('data-quality');
+                    let qualityName = '';
+                    
+                    switch(quality) {
+                        case 'high': qualityName = 'HD (720p)'; break;
+                        case 'medium': qualityName = 'SD (480p)'; break;
+                        case 'low': qualityName = 'Low (360p)'; break;
+                        case 'audio': qualityName = 'Audio Only'; break;
+                    }
+                    
+                    // Show download modal
+                    downloadStatus.textContent = `Preparing ${qualityName} download...`;
+                    downloadModal.classList.remove('hidden');
+                    
+                    // Simulate download progress
+                    let progress = 0;
+                    const interval = setInterval(() => {
+                        progress += Math.random() * 10;
+                        if (progress > 100) progress = 100;
+                        downloadProgress.style.width = `${progress}%`;
+                        
+                        if (progress < 30) {
+                            downloadStatus.textContent = `Downloading ${qualityName}...`;
+                        } else if (progress < 70) {
+                            downloadStatus.textContent = `Processing ${qualityName} file...`;
+                        } else if (progress < 100) {
+                            downloadStatus.textContent = `Finalizing ${qualityName} download...`;
+                        } else {
+                            downloadStatus.textContent = `Download complete!`;
+                            clearInterval(interval);
+                            
+                            // In a real app, this would trigger the actual file download
+                            setTimeout(() => {
+                                downloadModal.classList.add('hidden');
+                                downloadProgress.style.width = '0%';
+                                
+                                // Show success message
+                                alert('Your download has completed successfully!');
+                            }, 1000);
+                        }
+                    }, 200);
+                });
+            });
+            
+            // Close modal
+            closeModal.addEventListener('click', function() {
+                downloadModal.classList.add('hidden');
+                downloadProgress.style.width = '0%';
+            });
+        });
+    </script>
+<p style="border-radius: 8px; text-align: center; font-size: 12px; color: #fff; margin-top: 16px;position: fixed; left: 8px; bottom: 8px; z-index: 10; background: rgba(0, 0, 0, 0.8); padding: 4px 8px;">Made with <img src="https://enzostvs-deepsite.hf.space/logo.svg" alt="DeepSite Logo" style="width: 16px; height: 16px; vertical-align: middle;display:inline-block;margin-right:3px;filter:brightness(0) invert(1);"><a href="https://enzostvs-deepsite.hf.space" style="color: #fff;text-decoration: underline;" target="_blank" >DeepSite</a> - 🧬 <a href="https://enzostvs-deepsite.hf.space?remix=Ali4035/yt" style="color: #fff;text-decoration: underline;" target="_blank" >Remix</a></p></body>
+</html>
